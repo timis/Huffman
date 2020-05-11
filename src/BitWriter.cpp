@@ -1,28 +1,30 @@
 #include "BitWriter.h"
 
+/**
+ * @brief Construct a new BitWriter object
+ * 
+ * @param outFile The name of the encoded output file
+ */
 BitWriter::BitWriter(string outFile){
     fileName = outFile;
 }
 
+/**
+ * @brief Opens the encoded output file and returns whether it actually opened
+ * 
+ * @return true 
+ * @return false 
+ */
 bool BitWriter::open(){
-    if(isOpen()){
-        return false;
-    } else {
-        f.open(fileName, ios::out | ios::binary | ios::trunc);
-        // cout << "Opened file "<< fileName << " for encoded output" << endl;
-        return f.good();
-    }
+    f.open(fileName, ios::out | ios::binary | ios::trunc);
+    return f.good();
 }
 
-bool BitWriter::isOpen(){
-    return f.is_open();
-}
-
+/**
+ * @brief Pushes an remaining bits and then closes the file.
+ * 
+ */
 void BitWriter::close(){
-    if(!isOpen()){
-        return;
-    }
-    // cout << "Closing file for encoded output "<< endl;
     if(numBits> 0){
         int bitsAdded = 0;
         char toPush = '\0';
@@ -41,12 +43,18 @@ void BitWriter::close(){
         f.put(toPush);
     }
     f.close();
-
-    //If there are remaining bits in the vector, write them to the file
-    //then just close
 }
 
-
+/**
+ * @brief Writes a single character/byte to the output file in its encoded form.
+ * 
+ * First, the byte is sent through the map to find the coding. This coding is then added to a queue. There is a running tally of the number of bits
+ * that are located in a queue. Once this tally is above 8 (8 bits per byte, which is the minimum we can add at once), we write 8 bits to the file.
+ * This is done by building up a byte using bit shifts and bitwise OR-ing things together. Once a full byte is made, it is then inserted into the file.
+ * 
+ * @param codeMap 
+ * @param c 
+ */
 void BitWriter::insert(unordered_map<char,coding> &codeMap, char c){
     coding code = codeMap[c];
     numBits += code.numBits;
@@ -79,6 +87,15 @@ void BitWriter::insert(unordered_map<char,coding> &codeMap, char c){
     }
 }
 
+/**
+ * @brief Writes the huffman tree map from the beginning of the input file
+ * 
+ * The tree is encoded in the following scheme:
+ *  If there is a leaf node, write a "1" bit and then the 8 bits representing the ASCII character of this leaf node
+ *  If there is an internal node, write a "0" bit and recurse along the left and right subtrees
+ * 
+ * @param root The root of the encoding tree
+ */
 void BitWriter::writeTree(Node* root){
     if(root == NULL){
         return;
@@ -98,6 +115,15 @@ void BitWriter::writeTree(Node* root){
     }
 }
 
+/**
+ * @brief Writes a single bit at a time to the file
+ * 
+ * Since a byte is the smallest unit that can be written to the file, there is a class member character variable and a running tally of bitsUsed.
+ * Shift the current class character to the left by one bit and concatenate/OR the incoming bit to the least significant bit. Add one to the running tally.
+ * Once there are 8 bits written, push that character to the file (and reset the running tally)
+ * 
+ * @param bit 
+ */
 void BitWriter::writeBit(int bit){
 
     treeChar <<= 1;
@@ -112,6 +138,11 @@ void BitWriter::writeBit(int bit){
     }
 }
 
+/**
+ * @brief Writes enough bits to the file to finish out the byte so the actual encoding can start from a byte boundary
+ * 
+ * Could be refactored out with a slight edit to the writeTree architecture
+ */
 void BitWriter::flush(){
     for(int i = writeBits; i < 8; i++){
         writeBit(0);

@@ -8,6 +8,10 @@
 
 using namespace std;
 
+/**
+ * @brief Reads the huffman tree and huffman coded file bit by bit
+ * 
+ */
 class BitReader {
     public:
         BitReader(string infile);

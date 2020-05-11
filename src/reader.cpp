@@ -7,20 +7,17 @@
 #include <vector>
 #include <iomanip>
 
-#ifdef DEBUG
-#define CATCH_CONFIG_MAIN 
-#include "catch.hpp"
-#endif
-
 using namespace std;
 
-struct blah {
-    coding c;
-    char car;
-};
+vector<coding> vect;
 
-vector<blah> vect;
-
+/**
+ * @brief Does an inorder traversal of the encoding tree in order to build up a single vector of codings (used mostly as a debugging tool)
+ * 
+ * @param t The current node in the tree
+ * @param code The current code - code is built recursively by shifting and (possibly) adding one (ie, 0 becomes -> 00 and 01, which become 000,001,010,011 etc.)
+ * @param numBits The current number of bits (just increases by one with each recursive level)
+ */
 void inorder(Node* t,int code,int numBits){
     if(t == NULL){
         return;
@@ -30,19 +27,11 @@ void inorder(Node* t,int code,int numBits){
 
     inorder(t->left, leftcode,numBits+1);
     if(t->left == nullptr || t->right == nullptr){
-        blah b = {{numBits,code},t->c};
-        vect.push_back(b);
-        // cout << "Key: "<< int(t->c) << "    " << code << "    " << numBits << endl;
+        vect.push_back({numBits,code,t->c});
     }
-    inorder(t->right,rightcode,numBits+1);
-    
+    inorder(t->right,rightcode,numBits+1);   
 }
 
-bool myfunc(blah a, blah b){
-    return a.car < b.car;
-}
-
-#ifndef DEBUG
 int main(int argc, char** argv){
     if(argc != 3){
         cout << "Proper usage: ./reader  ENCODED_INPUT_FILE_NAME  DECODED_FILE_NAME" << endl;
@@ -58,10 +47,10 @@ int main(int argc, char** argv){
     b.setRoot(root);
     b.prep();
     inorder(root,0,0);
-    sort(vect.begin(),vect.end(),myfunc);
+    sort(vect.begin(),vect.end(),codeCharComparison);
     cout << "Char\tCode\t# Bits"<<endl;
     for(auto b : vect){
-        cout << setw(8) << int(b.car) << setw(8) << b.c.code << setw(8) << b.c.numBits << endl;
+        cout << setw(8) << int(b.character) << setw(8) << b.code << setw(8) << b.numBits << endl;
     }
 
     out.open(argv[2], ios::out);
@@ -81,4 +70,3 @@ int main(int argc, char** argv){
 
     return 0;
 }
-#endif

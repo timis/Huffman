@@ -3,7 +3,10 @@
 
 #include "coding.h"
 
-
+/**
+ * @brief An implementation of a minheap
+ * 
+ */
 class Heap {
     public: 
         Heap(int capacity);

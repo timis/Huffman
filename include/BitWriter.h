@@ -10,6 +10,10 @@
 
 using namespace std;
 
+/**
+ * @brief Writes the huffman tree and huffman coded file bit by bit
+ * 
+ */
 class BitWriter {
     public:
         BitWriter(string outFile);

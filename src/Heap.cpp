@@ -4,22 +4,47 @@
 
 using namespace std;
 
+/**
+ * @brief Construct a new Heap object with the given capacity
+ * 
+ * @param capacity The maximum number of nodes in the heap
+ */
 Heap::Heap(int capacity){
     this->capacity = capacity;
     this->heap = new Node*[capacity];
     this->size = 0;
 }
 
+/**
+ * @brief Get the number of nodes in the heap
+ * 
+ * @return int 
+ */
 int Heap::getSize(){
     return size;
 }
 
+/**
+ * @brief Remove a node from the heap
+ * 
+ * Done by making this node have the smallest count possible, restoring the heap properrty, and extracting the minimum
+ * 
+ * @param node 
+ */
 void Heap::remove(Node* node){
     node->count = INT_MIN;
     heapify(node->index);
     extractMin();
 }
 
+/**
+ * @brief Insert a new node given the character and the count (number of occurences of that character in the huffman source text - aka the key for our heap)
+ * 
+ * Is basically a wrapper around the Heap::insert(Node*) function
+ * 
+ * @param c The character getting inserted
+ * @param count The number of occurences of that character/the key
+ */
 void Heap::insert(char c, int count){
     Node* newNode = new Node;
     newNode->c = c;
@@ -27,6 +52,14 @@ void Heap::insert(char c, int count){
     insert(newNode);
 }
 
+/**
+ * @brief Insert the given node into the heap.
+ * 
+ * First, just insert it at the first open slot. Then, continually compare it with its parent, swapping up the tree until this node is larger than its immediate parent 
+ * (which means the heap property is satisfied)
+ * 
+ * @param node The node to be inserted
+ */
 void Heap::insert(Node* node){
     if(size >= capacity){
         cerr << "Heap is full already - errors must exist somewhere" << endl;
@@ -46,6 +79,11 @@ void Heap::insert(Node* node){
     }
 }
 
+/**
+ * @brief Returns the 0-th element of the heap (guaranteed to be the minimum due to the nature of the heap property). Then restores the heap property.
+ * 
+ * @return Node* 
+ */
 Node* Heap::extractMin(){
     if(size <= 0){
         return NULL;
@@ -62,6 +100,14 @@ Node* Heap::extractMin(){
     return root;
 }
 
+/**
+ * @brief Restores the heap property starting from the given index and continuing down.
+ * 
+ * Works recursively - finds the smallest of a node and its left and right children, then swaps around and recurses if need be. If the parent is the smallest, does nothing
+ * since that means the heap property is already satisfied
+ * 
+ * @param i The index in the heap
+ */
 void Heap::heapify(int i){
     int l = left(i);
     int r = right(i);
@@ -83,7 +129,7 @@ void Heap::heapify(int i){
 }
 
 
-#ifdef DEBUG
+#ifdef TEST
     #include "catch.hpp"
     TEST_CASE("Heap works correctly", "[Heap]"){
         Heap h(10);

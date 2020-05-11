@@ -6,45 +6,36 @@
 #include "BitWriter.h"
 #include <vector>
 
-#ifdef DEBUG
-#define CATCH_CONFIG_MAIN 
-#include "catch.hpp"
-#endif
-
 using namespace std;
 
-struct blah {
-    coding c;
-    char car;
-};
+vector<coding> vect;
 
-vector<blah> vect;
-
-bool myfunc(blah a, blah b){
-    return a.car < b.car;
-}
-
-void inorder(unordered_map<char, coding> &map,Node* t,int code,int numBits){
+/**
+ * @brief Given a huffman encoding tree, builds a map between characters and codes
+ * 
+ * @param map Passed by reference (so shared between all recursive calls)
+ * @param t The current node we are looking at
+ * @param code The current code - code is built recursively by shifting and (possibly) adding one (ie, 0 becomes -> 00 and 01, which become 000,001,010,011 etc.)
+ * @param numBits The current number of bits (just increases by one with each recursive level)
+ */
+void buildMapInOrder(unordered_map<char, coding> &map,Node* t,int code,int numBits){
     if(t == NULL){
         return;
     }
     int leftcode = code << 1;
     int rightcode = code << 1 | 1;
 
-    inorder(map,t->left, leftcode,numBits+1);
+    buildMapInOrder(map,t->left, leftcode,numBits+1);
     if(t->left == NULL && t->right == NULL){
-        map[t->c] = {numBits, code};
-        blah b = {{numBits,code},t->c};
-        vect.push_back(b);
+        map[t->c] = {numBits, code,t->c};
+        vect.push_back({numBits, code,t->c});
     } else if (t->left == NULL || t->right == NULL){
         cerr << "ERROR - Node in encoding tree has only child" << endl;
     }
-    inorder(map,t->right,rightcode,numBits+1);
+    buildMapInOrder(map,t->right,rightcode,numBits+1);
     
 }
 
-
-#ifndef DEBUG
 int main(int argc, char** argv){
     unordered_map<char,int> map;
     string s;
@@ -101,11 +92,11 @@ int main(int argc, char** argv){
     //Get the root of the encoding tree
     Node* root = h.extractMin();
     unordered_map<char,coding> codeMap;
-    inorder(codeMap,root,0,0);
-    sort(vect.begin(),vect.end(),myfunc);
+    buildMapInOrder(codeMap,root,0,0);
+    sort(vect.begin(),vect.end(),codeCharComparison);
     cout << "Char\tCode\t# Bits"<<endl;
     for(auto b : vect){
-        cout << setw(8) << int(b.car) << setw(8) << b.c.code << setw(8) << b.c.numBits << endl;
+        cout << setw(8) << int(b.character) << setw(8) << b.code << setw(8) << b.numBits << endl;
     }
     BitWriter b(argv[2]);
     if(!b.open()){
@@ -134,4 +125,3 @@ int main(int argc, char** argv){
 
     return 0;
 }
-#endif
