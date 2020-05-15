@@ -11,6 +11,7 @@ using namespace std;
 
 vector<coding> vect;
 
+
 /**
  * @brief Does an inorder traversal of the encoding tree in order to build up a single vector of codings (used mostly as a debugging tool)
  * 
@@ -18,18 +19,18 @@ vector<coding> vect;
  * @param code The current code - code is built recursively by shifting and (possibly) adding one (ie, 0 becomes -> 00 and 01, which become 000,001,010,011 etc.)
  * @param numBits The current number of bits (just increases by one with each recursive level)
  */
-void inorder(Node* t,int code,int numBits){
+void inorderTreeTraversal(Node* t,int code,int numBits){
     if(t == NULL){
         return;
     }
     int leftcode = code << 1;
     int rightcode = code << 1 | 1;
 
-    inorder(t->left, leftcode,numBits+1);
+    inorderTreeTraversal(t->left, leftcode,numBits+1);
     if(t->left == nullptr || t->right == nullptr){
         vect.push_back({numBits,code,t->c});
     }
-    inorder(t->right,rightcode,numBits+1);   
+    inorderTreeTraversal(t->right,rightcode,numBits+1);   
 }
 
 int main(int argc, char** argv){
@@ -46,7 +47,7 @@ int main(int argc, char** argv){
     Node* root = b.readTree();
     b.setRoot(root);
     b.prep();
-    inorder(root,0,0);
+    inorderTreeTraversal(root,0,0);
     sort(vect.begin(),vect.end(),codeCharComparison);
     cout << "Char\tCode\t# Bits"<<endl;
     for(auto b : vect){
