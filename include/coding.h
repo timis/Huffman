@@ -1,6 +1,8 @@
 #ifndef CODING_H
 #define CODING_H
 
+#pragma once
+
 /**
  * @brief Basic object containing information about each character encoding
  * 
@@ -23,16 +25,5 @@ struct Node {
     Node* right = nullptr; // The right child of this node (null if a leaf node)
 };
 
-/**
- * @brief A helper funtion for ordering a vector<coding> by the character
- * 
- * @param a 
- * @param b 
- * @return true 
- * @return false 
- */
-bool codeCharComparison(coding a, coding b){
-    return a.character < b.character;
-}
 
 #endif

@@ -4,8 +4,8 @@ project(Huffman)
 
 set(EXECUTABLE_OUTPUT_PATH ./bin/)
 
-add_executable(reader src/reader.cpp src/BitReader.cpp)
-add_executable(writer src/writer.cpp src/BitWriter.cpp src/Heap.cpp)
+add_executable(reader src/reader.cpp src/Huffman.cpp src/BitReader.cpp src/BitWriter.cpp src/Heap.cpp)
+add_executable(writer src/writer.cpp src/Huffman.cpp src/BitWriter.cpp src/Heap.cpp src/BitReader.cpp)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
