@@ -4,6 +4,7 @@
 #include "BitWriter.h"
 #include "BitReader.h"
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -15,7 +16,6 @@ class Huffman {
         void buildMapInOrder(unordered_map<char, coding> &map,Node* t,int code,int numBits);
         void inorderTreeTraversal(Node* t,int code,int numBits);
         vector<coding> vect;
-
         
 };
 

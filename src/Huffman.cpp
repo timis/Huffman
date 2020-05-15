@@ -1,7 +1,18 @@
 #include "Huffman.h"
 #include "Heap.h"
 
-void Huffman::encode(string inputFile, string encodedFile,string mapFile="") {
+bool codeCharComparison(coding a, coding b){
+    return a.character < b.character;
+}
+
+/**
+ * @brief Encodes and saves the input file into an encoded file
+ * 
+ * @param inputFile The file containing the info to encode
+ * @param encodedFile The file name for the encoded data
+ * @param mapFile If this is not the empty string, will also save the map in its own file (for debugging purposes)
+ */
+void Huffman::encode(string inputFile, string encodedFile,string mapFile) {
     unordered_map<char,int> map;
     string s;
     ifstream inf;
@@ -77,7 +88,14 @@ void Huffman::encode(string inputFile, string encodedFile,string mapFile="") {
     inf.close();
 }
 
-void Huffman::decode(string encodedFile, string outputFile, string mapFile = ""){
+/**
+ * @brief Decodes an encoded input and saves it into a file
+ * 
+ * @param encodedFile The file containing the encoded data
+ * @param outputFile The filename of the output file to hold the decoded data
+ * @param mapFile If this is not the empty string, this map will be used to decode data instead of the one held in the encoded data file.
+ */
+void Huffman::decode(string encodedFile, string outputFile, string mapFile){
     ofstream out;
     BitReader b(encodedFile);
     if(!b.open()){
@@ -156,3 +174,4 @@ void Huffman::inorderTreeTraversal(Node* t,int code,int numBits){
     }
     inorderTreeTraversal(t->right,rightcode,numBits+1);   
 }
+
